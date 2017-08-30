@@ -1,0 +1,138 @@
+library(shiny)
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(stringr)
+
+train <- read_csv('train.csv')
+explore_data <- read_csv('explore.csv')
+
+model_formula <- "success  ~ 1   +  backed  +  numImages  +  goal  +  mainCategory  +  campaignDuration  +  created  +  numCollaborators  +  title_word_ct  +  title_word_match"
+best_model <- glm(as.formula(model_formula), data = train, family = 'binomial')
+categories <- c('Games','Design','Technology','Film & Video','Music','Publishing','Fashion','Food','Art','Comics','Theater','Photography','Crafts','Dance','Journalism')
+summary(best_model)
+
+category_success_rates <- explore_data %>%
+  group_by(mainCategory) %>%
+  summarize(success_rate = 100* mean(success))
+colnames(category_success_rates) <- c("Category","Success Rate (%)")
+
+getWordCount <- function(title) {
+  words <- str_match_all(title, "\\S+" )  # Sequences of non-spaces
+  return(length(words[[1]]))
+}
+
+getTitleMatch <- function(campaignTitle) {
+  title <- tolower(campaignTitle)
+  words <- str_match_all(title, "\\S+" )
+  wordmap <- read_csv('wordmap.csv', col_names = FALSE)
+  colnames(wordmap) <- c("Word","Count")
+  match <- 0
+  for (i in 1:length(words)) { 
+    word <- words[i]
+    if(word %in% wordmap$Word) {}
+      match <- match + 1
+  }
+  return(match)
+}
+
+ui <- fluidPage(
+  headerPanel(tags$h1('Will Your Kickstarter Campaign Be Successful?', align = 'center'),
+              tags$hr()),
+  fluidRow(
+    column(width = 4, style='padding-left:30px;',
+          tags$br(),
+          tags$br(),
+          tags$h4('Enter information about your campaign:'),
+          textInput(inputId = 'title',label = 'Campaign Title'),
+          selectInput(inputId = 'category', label = 'Campaign Category', choices = categories, selected = NULL, multiple = FALSE),
+          numericInput(inputId = 'goal', label = 'Campaign Fundraising Goal (in USD)', value = 0, min = 0, step = 100),
+          numericInput(inputId = 'duration', label = 'Campaign Duration (in days)', value = 30, min = 0, max = 100, step = 5),
+          numericInput(inputId = 'collaborators', label = 'Number of Project Collaborators', value = 0, min = 0, step = 1),
+          numericInput(inputId = 'images', label = 'How many images are on your campaign profile?', value = 0, min = 0, step = 1),
+          numericInput(inputId = 'created', label = 'How many Kickstarter campaigns have you launched previously?', value = 0, min = 0, step = 1),
+          numericInput(inputId = 'backed', label = 'How many Kickstarter campaigns have you backed?', value = 0, min = 0, step = 1),
+          actionButton(inputId = 'calculate', label = 'Compute prediction!', style="color: #fff; background-color: #4261fa; border-color: #2e6da4")
+  ),
+    column(4, align = 'center',
+      tags$br(),
+      tags$br(),
+      tags$h4('How well do campaigns perform on Kickstarter?'),
+      tableOutput(outputId = 'categorySuccess')
+    ),
+    column(4, align = 'center',
+         tags$br(),
+         tags$br(),
+         tags$h4('What words are most commonly used in successful campaigns?'),
+         tags$img(src = 'mostBackedTitles.jpeg', height = '400px', width = '400px')
+    )
+  ), 
+  tags$hr(),
+  fluidRow(align = 'center',
+      tags$h3('Your results:', align = 'center'),
+      textOutput(outputId = 'summary'),
+      textOutput(outputId = 'suggestions'),
+      textOutput(outputId = 'reminder')
+    ),
+  tags$hr(),
+  tags$footer(align = 'center', style = 'height:100px',
+    'Built by ', tags$a('Nicholas Benavides', href = 'https://www.linkedin.com/in/nnbenavides/'), 
+    '- Stanford Class of 2019'
+  )
+)
+
+server <- function(input, output) {
+  output$categorySuccess <- renderTable(category_success_rates, stripes = TRUE)
+  observeEvent(input$calculate, {
+               inputs <- tibble(
+                 backed = input$backed,
+                 numImages = input$images,
+                 goal = input$goal,
+                 mainCategory = input$category,
+                 campaignDuration= input$duration,
+                 created = input$created,
+                 numCollaborators = input$collaborators,
+                 title_word_ct = getWordCount(input$title),
+                 title_word_match = getTitleMatch(input$title)
+               )
+               prediction = predict(best_model, inputs, type = 'response')
+               prediction <- round(prediction*100,digits=0)
+               output$summary <- renderText(paste('Your probability of success is ', prediction, '%.'))
+               if(prediction < 75) {
+                 sugg1 <- ""
+                 sugg2 <- ""
+                 if(input$images <= 3 || input$images == FALSE) {
+                   sugg1 <- "add more images to your profile"
+                 } 
+                 if(input$collaborators < 1 || input$collaborators == FALSE) {
+                   if(sugg1 == "") {
+                     sugg1 <- "try to find a collaborator with similar interests"
+                   } else {
+                     sugg2 <- "try to find a collaborator with similar interests"
+                   }
+                 }
+                 if(input$backed == 0) {
+                   if(sugg1 == "") {
+                     sugg1 <- "get involved with the Kickstarter community by backing some campaigns"
+                   } else if(sugg2 == "") {
+                     sugg2 <- "get involved with the Kickstarter community by backing some campaigns"
+                   }
+                 }
+                 if(sugg1 != "" & sugg2 != "") {
+                   output$suggestions <- renderText(paste("To improve your chances of a successful campaign, we suggest that you ",sugg1, 
+                                                          " and ",sugg2, "."))
+                   output$reminder <- renderText("Remember, practice makes perfect! Having previous experience starting Kickstarter campaigns really improves your chances!")
+                 } else if(sugg1 != "" && sugg2 == "") {
+                   output$suggestions <- renderText(paste("To improve your chances of a successful campaign, we suggest that you ",sugg1, "."))
+                   output$reminder <- renderText("Remember, practice makes perfect! Having previous experience starting Kickstarter campaigns really improves your chances!")
+                 }
+               }
+               else {
+                 output$suggestions <- renderText("Great job! Your campaign has a high chance of success!")
+               }
+               
+               }
+               )
+}
+
+shinyApp(ui = ui, server = server)

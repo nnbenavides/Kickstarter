@@ -42,14 +42,17 @@ makeWordCloud <- function(data, photoTitle) {
   corpus <- tm_map(corpus, removePunctuation)
   corpus <- tm_map(corpus, removeWords, stopwords('english'))
   colorPal <- brewer.pal(8,"Dark2")
-  #png(photoTitle, width=2400,height=2400)
+  png(photoTitle, width=2400,height=2400)
   wordcloud(corpus, max.words = 60, random.order = FALSE, min.freq = 3, colors = colorPal)
-  #dev.off()
+  dev.off()
 }
 
 # generate word cloud from the descriptions of the 4000 most backed kickstarter campaigns
 mostBackedBlurbs <- read_file('mostBackedBlurbs.txt')
 makeWordCloud(mostBackedBlurbs, "Most Backed Campaigns Wordcloud")
+
+mostBackedTitles <- read_file('mostBackedTitles.txt')
+makeWordCloud(mostBackedTitles, 'Most Backed Titles Wordcloud')
 
 # successful campaigns included in the dataset that will be used to build the model
 successfulCampaigns <- explore_data %>%
@@ -338,7 +341,7 @@ summary(best_model)
 test<- test %>%
   mutate(prob_success = predict(best_model, test, type = 'response'),
          pred_success = (prob_success > threshold))
-
+best_models_by_num_features$equation[max_index]
 # compute accuracy of the best model
 accuracy <- mean(test$pred_success == test$success)
 
@@ -386,6 +389,7 @@ summary_regularization <- tibble(
   value = c(best_models_by_num_features$auc_test[max_index], auc_L1, auc_L2)
 )
 summary_regularization
+
 
 #--------------------------- Random Forest ------------------------------------------------------
 
