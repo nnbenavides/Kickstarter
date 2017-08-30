@@ -1,0 +1,13 @@
+name: kickstarter
+title:
+username:
+account: nbenavides
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 208690
+bundleId: 959719
+url: https://nbenavides.shinyapps.io/kickstarter/
+when: 1504056292.13504
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: Kickstarter/.gitattributes|Kickstarter/.git/COMMIT_EDITMSG|Kickstarter/.git/config|Kickstarter/.git/description|Kickstarter/.git/FETCH_HEAD|Kickstarter/.git/HEAD|Kickstarter/.git/index|Kickstarter/.git/hooks/applypatch-msg.sample|Kickstarter/.git/hooks/commit-msg.sample|Kickstarter/.git/hooks/post-update.sample|Kickstarter/.git/hooks/pre-applypatch.sample|Kickstarter/.git/hooks/pre-commit.sample|Kickstarter/.git/hooks/pre-push.sample|Kickstarter/.git/hooks/pre-rebase.sample|Kickstarter/.git/hooks/pre-receive.sample|Kickstarter/.git/hooks/prepare-commit-msg.sample|Kickstarter/.git/hooks/update.sample|Kickstarter/.git/info/exclude|Kickstarter/.git/logs/HEAD|Kickstarter/.git/logs/refs/heads/master|Kickstarter/.git/objects/95/c798751083ef2d6f9b3200f75597ddd82eb010|Kickstarter/.git/objects/b6/1f7545cfc30943469c3218a894807826d0f446|Kickstarter/.git/objects/eb/a1110b5794582b53554bb1e4224b860d4e173f|Kickstarter/.git/refs/heads/master|wordcloud/DESCRIPTION|wordcloud/INDEX|wordcloud/NAMESPACE|wordcloud/NEWS|wordcloud/data/SOTU.RData|wordcloud/help/aliases.rds|wordcloud/help/AnIndex|wordcloud/help/paths.rds|wordcloud/help/wordcloud.rdb|wordcloud/help/wordcloud.rdx|wordcloud/html/00Index.html|wordcloud/html/R.css|wordcloud/libs/wordcloud.so|wordcloud/libs/wordcloud.so.dSYM/Contents/Info.plist|wordcloud/libs/wordcloud.so.dSYM/Contents/Resources/DWARF/wordcloud.so|wordcloud/Meta/data.rds|wordcloud/Meta/features.rds|wordcloud/Meta/hsearch.rds|wordcloud/Meta/links.rds|wordcloud/Meta/nsInfo.rds|wordcloud/Meta/package.rds|wordcloud/Meta/Rd.rds|wordcloud/R/wordcloud|wordcloud/R/wordcloud.rdb|wordcloud/R/wordcloud.rdx
