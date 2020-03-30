@@ -389,7 +389,4 @@ summary_regularization <- tibble(
   value = c(best_models_by_num_features$auc_test[max_index], auc_L1, auc_L2)
 )
 summary_regularization
-
-
-#--------------------------- Random Forest ------------------------------------------------------
-
+summary(best_model)

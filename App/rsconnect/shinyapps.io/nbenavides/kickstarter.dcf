@@ -5,6 +5,8 @@ account: nbenavides
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 208690
-bundleId: 959735
+bundleId: 988331
 url: https://nbenavides.shinyapps.io/kickstarter/
-when: 1504057276.57244
+when: 1505849738.66316
+asMultiple: FALSE
+asStatic: FALSE

@@ -103,7 +103,15 @@ server <- function(input, output) {
                )
                prediction = predict(best_model, inputs, type = 'response')
                prediction <- round(prediction*100,digits=0)
-               output$summary <- renderText(paste('Your probability of success is ', prediction, '%.'))
+               status <- ""
+               if(prediction <= 33) {
+                 status <- "low (0-33%)."
+               } else if(prediction <= 67) {
+                 status <- "moderate (34-67%)."
+               } else {
+                 status <- "high (68-99%)."
+               }
+               output$summary <- renderText(paste('Your probability of success is ', status))
                if(prediction < 75) {
                  sugg1 <- ""
                  sugg2 <- ""
